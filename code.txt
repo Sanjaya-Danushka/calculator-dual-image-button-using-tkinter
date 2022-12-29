@@ -1,0 +1,341 @@
+import ctypes as ct
+import time
+
+
+def dark_title_bar(window):
+    window.update()
+    DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+    set_window_attribute = ct.windll.dwmapi.DwmSetWindowAttribute
+    get_parent = ct.windll.user32.GetParent
+    hwnd = get_parent(window.winfo_id())
+    rendering_policy = DWMWA_USE_IMMERSIVE_DARK_MODE
+    value = 2
+    value = ct.c_int(value)
+    set_window_attribute(hwnd, rendering_policy, ct.byref(value), ct.sizeof(value))
+
+
+from tkinter import *
+
+root = Tk()
+dark_title_bar(root)
+root.config(bg='#202020')
+images = PhotoImage(file="icon.png")
+root.iconphoto(True, images)
+root.geometry('260x360')
+root.title('Calculator')
+root.minsize(260, 360)
+root.maxsize(260, 360)
+# label ----------------------
+equation_text1 = ''
+equation_label1 = StringVar()
+label = Label(root, textvariable=equation_label1, font=('consolas', 20), bg='#202020', fg='white')
+label.pack()
+equation_text = ''
+equation_label = StringVar()
+label1 = Label(root, textvariable=equation_label, font=('consolas', 20), bg='#202020', fg='white')
+label1.pack()
+
+
+# main ------------------------
+def new():
+    new1 = Tk()
+    dark_title_bar(new1)
+    new1.title('About')
+    new1.config(bg='#202020')
+    label12 = Label(new1, text='Hello Programmer !', font=('consolas', 20), bg='#202020', fg='yellow')
+    label12.pack()
+    images1 = PhotoImage(file="icon.png")
+    text1 = 'This program is created for the purpose of learning!\n if you want to code ? \n-**- ' \
+            'dsanjaya712@gmail.com-**- \n Have a nice day!'
+    label123 = Label(new1, text=text1, font=('Bradley Hand ITC', 15), bg='#202020', fg='yellow')
+    label123.pack()
+    # images11 = PhotoImage(file="C:\\Users\\dsanj\\Desktop\\New folder\\icons8-calculator-50.png")
+    new1.iconphoto(True, images1)
+
+    new1.mainloop()
+
+
+def button_press(num):
+    global equation_text
+
+    equation_text = equation_text + str(num)
+
+    equation_label.set(equation_text)
+
+
+def back():
+    global equation_text
+    x1 = equation_label.get()
+    e_text1 = x1[:-1]
+    equation_label.set(e_text1)
+    equation_text = equation_label.get()
+
+
+def equals():
+    global equation_text
+
+    try:
+
+        total = str(eval(equation_text))
+        equation_label1.set(equation_text)
+
+        if '.' in total:
+            total = float(total)
+            total = '{:.5f}'.format(total)
+        else:
+            pass
+
+        equation_label.set(total)
+
+        equation_text = total
+
+    except SyntaxError:
+
+        equation_label.set(":(")
+
+        equation_text = ""
+
+    except ZeroDivisionError:
+
+        equation_label.set("Error")
+
+        equation_text = ""
+
+
+def clear():
+    global equation_text
+
+    equation_label.set("")
+    equation_label1.set("")
+
+    equation_text = ""
+
+
+# main---------------------------------
+def button_image(num, button, image__1, image__2):
+    image_a = image__1
+    image_b = image__2
+    num = num
+    if num == '=':
+        equals()
+    else:
+        button_press(num)
+
+    def on_enter(e):
+        button['image'] = image_b
+
+    def of_leave(e):
+        button['image'] = image_a
+
+    button.bind('<Enter>', on_enter)
+    button.bind('<Leave>', of_leave)
+
+    def on_key(e1):
+
+        button['image'] = image_b
+
+    def of_val(e1):
+
+        button['image'] = image_a
+
+    frame.bind("<KeyPress>", on_key)
+    frame.bind("<KeyRelease>", of_val)
+    # setdefault(button)
+
+
+frame = Frame(root, bg='#202020')
+
+frame.focus_set()
+frame.pack()
+
+# --l1----b1--------------------------
+button_c = Button(frame, text='C', bd=0, font=('arial', 9), relief=RAISED,
+                  width=8, border=0, bg='#202020', fg='green', activebackground='#202020',
+                  activeforeground='blue', command=clear)
+button_c.grid(row=0, column=2)
+
+button_v = Button(frame, text='%', font=('arial', 9), bd=0, width=8, fg='green', border=0, bg='#202020',
+                  command=lambda: button_press('%'),
+                  activebackground='#202020',
+                  activeforeground='blue')
+button_v.grid(row=0, column=1)
+
+button_s = Button(frame, text='A', bd=0, font=('arial', 9), fg='green', width=8, border=0, bg='#202020',
+                  activebackground='#202020', command=new,
+                  activeforeground='blue')
+button_s.grid(row=0, column=0)
+
+button_s1 = Button(frame, text='<', bd=0, font=('arial', 9), fg='green', width=8, border=0, bg='#202020',
+                   activebackground='#202020',
+                   activeforeground='blue', command=back)
+button_s1.grid(row=0, column=3)
+
+# --l1----b1--------------------------
+image7 = PhotoImage(file="7number_7_3825.png")
+image7_1 = PhotoImage(file='7number_7_3074.png')
+button7 = Button(frame, image=image7, border=0, command=lambda: button_image(7, button7, image7, image7_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button7.grid(row=1, column=0)
+
+# --l1----b2--------------------------
+image8 = PhotoImage(file="8number_8_3073.png")
+image8_1 = PhotoImage(file="8number_8_3824.png")
+button8 = Button(frame, image=image8, border=0, command=lambda: button_image(8, button8, image8, image8_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button8.grid(row=1, column=1)
+
+# --l1----b3--------------------------
+image9 = PhotoImage(file="9number_9_3072.png")
+image9_1 = PhotoImage(file="9number_9_3071.png")
+button9 = Button(frame, image=image9, border=0, command=lambda: button_image(9, button9, image9, image9_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button9.grid(row=1, column=2)
+
+# --l1----b4--------------------------
+imageml = PhotoImage(
+    file="x_close_cross_delete_icon_159748 (1)-----------.png").subsample(2, 2)
+imageml_1 = PhotoImage(file="x_close_icon_143474---------.png").subsample(2, 2)
+buttonml = Button(frame, image=imageml, border=0, command=lambda: button_image('*', buttonml, imageml, imageml_1),
+                  bg='#202020', activebackground='#202020', activeforeground='blue')
+buttonml.grid(row=1, column=3)
+
+# --l2----b1--------------------------
+image4 = PhotoImage(file="4number_4_3076.png")
+image4_1 = PhotoImage(file="4number_4_3829.png")
+button4 = Button(frame, image=image4, border=0, command=lambda: button_image(4, button4, image4, image4_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button4.grid(row=2, column=0)
+
+# --l2----b2--------------------------
+image5 = PhotoImage(file="5_number_3828.png")
+image5_1 = PhotoImage(file="5_number_3827.png")
+button5 = Button(frame, image=image5, border=0, command=lambda: button_image(5, button5, image5, image5_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button5.grid(row=2, column=1)
+
+# --l2----b3--------------------------
+image6 = PhotoImage(file="6_number_3826.png")
+image6_1 = PhotoImage(file="6_number_3075.png")
+button6 = Button(frame, image=image6, border=0, command=lambda: button_image(6, button6, image6, image6_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button6.grid(row=2, column=2)
+
+# --l2----b4--------------------------
+imagesub = PhotoImage(file="dash_icon_185090.png").subsample(2, 2)
+imagesub_1 = PhotoImage(file="dash_icon_143612.png").subsample(2, 2)
+buttonsub = Button(frame, image=imagesub, border=0, command=lambda: button_image('-', buttonsub, imagesub, imagesub_1),
+                   bg='#202020', activebackground='#202020', activeforeground='blue')
+buttonsub.grid(row=2, column=3)
+
+# --l3----b1--------------------------
+image1 = PhotoImage(file="icons8-minus-64.png")
+image1_1 = PhotoImage(file="1number_1_3831.png")
+button1 = Button(frame, image=image1, border=0, command=lambda: button_image(1, button1, image1, image1_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button1.grid(row=3, column=0)
+
+# --l3----b2--------------------------
+image2 = PhotoImage(file="2number_2_3830.png")
+image2_1 = PhotoImage(file="2number_2_3079.png")
+button2 = Button(frame, image=image2, border=0, command=lambda: button_image(2, button2, image2, image2_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button2.grid(row=3, column=1)
+
+# --l3----b3--------------------------
+image3 = PhotoImage(file="3number_3_3078.png")
+image3_1 = PhotoImage(file="3number_3_3077.png")
+button3 = Button(frame, image=image3, border=0, command=lambda: button_image(3, button3, image3, image3_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button3.grid(row=3, column=2)
+
+# --l3----b4--------------------------
+image_pl = PhotoImage(file="plus_120249------------------------.png").subsample(
+    2, 2)
+imagepl_1 = PhotoImage(
+    file="plus_add_insert_icon_143524----------.png").subsample(2, 2)
+button_pl = Button(frame, image=image_pl, border=0, command=lambda: button_image('+', button_pl, image_pl, imagepl_1),
+                   bg='#202020', activebackground='#202020', activeforeground='blue')
+button_pl.grid(row=3, column=3)
+
+# --l4----b1--------------------------
+image_dev = PhotoImage(file="divide_icon_172503 (1)-----------.png").subsample(2,
+                                                                               2)
+imagedev_1 = PhotoImage(file="divide_icon_199291---------------.png").subsample(
+    2, 2)
+button_dev = Button(frame, image=image_dev, border=0,
+                    command=lambda: button_image('/', button_dev, image_dev, imagedev_1),
+                    bg='#202020', activebackground='#202020', activeforeground='blue')
+button_dev.grid(row=4, column=0)
+
+# --l4----b2--------------------------
+image0 = PhotoImage(file="number_square_zero_icon_174348.png")
+image0_1 = PhotoImage(file="number_square_zero_icon_173664.png")
+button0 = Button(frame, image=image0, border=0, command=lambda: button_image(0, button0, image0, image0_1),
+                 bg='#202020', activebackground='#202020', activeforeground='blue')
+button0.grid(row=4, column=1)
+
+# --l4----b3--------------------------
+imagedot = PhotoImage(file="dot_icon_185072.png").subsample(2, 2)
+imagedot_1 = PhotoImage(file="dot_l_icon_153350.png").subsample(2, 2)
+buttondot = Button(frame, image=imagedot, border=0, command=lambda: button_image('.', buttondot, imagedot, imagedot_1),
+                   bg='#202020', activebackground='#202020', activeforeground='blue')
+buttondot.grid(row=4, column=2)
+
+# --l4----b4--------------------------
+image_equal_1 = PhotoImage(file="equal_icon_212062--------------.png").subsample(
+    2, 2)
+image_equal = PhotoImage(file="equal_icon_135663-------------.png").subsample(2,
+                                                                              2)
+button_equal = Button(frame, image=image_equal, border=0,
+                      command=lambda: button_image('=', button_equal, image_equal, image_equal_1),
+                      bg='#202020', activebackground='green', activeforeground='blue')
+button_equal.grid(row=4, column=3)
+
+
+# key custom------------------------------------------
+def do(event):
+    num = event.keysym
+    if num == '7':
+        button_image(7, button7, image7, image7_1)
+    elif num == '8':
+        button_image(8, button8, image8, image8_1)
+    elif num == '9':
+        button_image(9, button9, image9, image9_1)
+    elif num == 'asterisk':
+        button_image('*', buttonml, imageml, imageml_1)
+    elif num == '4':
+        button_image(4, button4, image4, image4_1)
+    elif num == '5':
+        button_image(5, button5, image5, image5_1)
+    elif num == '6':
+        button_image(6, button6, image6, image6_1)
+    elif num == 'minus':
+        button_image('-', buttonsub, imagesub, imagesub_1)
+    elif num == '1':
+        button_image(1, button1, image1, image1_1)
+    elif num == '2':
+        button_image(2, button2, image2, image2_1)
+    elif num == '3':
+        button_image(3, button3, image3, image3_1)
+    elif num == 'plus':
+        button_image('+', button_pl, image_pl, imagepl_1)
+    elif num == 'slash':
+        button_image('/', button_dev, image_dev, imagedev_1)
+    elif num == '0':
+        button_image(0, button0, image0, image0_1)
+    elif num == 'period':
+        button_image('.', buttondot, imagedot, imagedot_1)
+    elif num == 'equal' or num == 'Return':
+        button_image('=', button_equal, image_equal, image_equal_1)
+    elif num == 'Delete':
+        clear()
+    elif num == 'BackSpace':
+        back()
+    elif num == '%':
+        button_press()
+    else:
+        pass
+
+
+root.bind('<Key>', do)
+root.mainloop()
